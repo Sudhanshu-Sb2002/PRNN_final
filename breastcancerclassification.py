@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import medmnist.evaluator as EVALUATOR
 import numpy
 import numpy as np
-
+import sklearn.metrics as metrics
 from PRNN_final.LinearRegression import regression_classifier
 from PRNN_final.knn import knn_naive
 
@@ -82,12 +82,14 @@ def k_means_evaluator(train_images, test_images, train_labels, test_labels, *, k
     x_graph = numpy.zeros(kmax)
     AUCscores = numpy.zeros(x_graph.size)
     ACCscores = numpy.zeros(x_graph.size)
-
+    F1scores = numpy.zeros(x_graph.size)
     for k in range(0, kmax):
         Y_test = knn_naive(train_images, train_labels, test_images, k=k, metric=2)
         x_graph[k] = k
-        AUCscores[k] = EVALUATOR.getAUC(test_labels, Y_test, 'binary-class')
+        AUCscores[k] =metrics.f1_score(test_labels,Y_pred)
+
         ACCscores[k] = EVALUATOR.getACC(test_labels, Y_test, 'binary-class')
+        F1scores[k] = f1_score(test_labels, y_pred)
     plotter(x_graph, AUCscores, ACCscores, np.zeros(x_graph.size), 'K-means binary classification', 'K')
 
 

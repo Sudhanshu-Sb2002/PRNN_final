@@ -1,5 +1,5 @@
 import numpy as np
-
+import sklearn.metrics as metrics
 
 def knn_naive(X_train, Y_train, X_test, *, k=5, metric=2):
     # First we difeine a small function to return the k smallet elements of an array
