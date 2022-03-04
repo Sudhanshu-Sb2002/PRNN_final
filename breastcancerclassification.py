@@ -6,6 +6,7 @@ import medmnist.evaluator as EVALUATOR
 import numpy
 import numpy as np
 import sklearn.metrics as metrics
+
 from PRNN_final.LinearRegression import regression_classifier
 from PRNN_final.knn import knn_naive
 
@@ -79,18 +80,37 @@ def plotter(x_graph, AUCscores, ACCscores, F1scores, title, xlabel):
 
 
 def k_means_evaluator(train_images, test_images, train_labels, test_labels, *, kmax=50):
-    x_graph = numpy.zeros(kmax)
-    AUCscores = numpy.zeros(x_graph.size)
-    ACCscores = numpy.zeros(x_graph.size)
-    F1scores = numpy.zeros(x_graph.size)
-    for k in range(0, kmax):
-        Y_test = knn_naive(train_images, train_labels, test_images, k=k, metric=2)
-        x_graph[k] = k
-        AUCscores[k] =metrics.f1_score(test_labels,Y_pred)
+    k_max = 20
+    no_of_tests = 4
+    x_graph = np.zeros((no_of_tests, k_max))
+    AUCscores = np.zeros(x_graph.shape)
+    ACCscores = np.zeros(x_graph.shape)
+    F1scores = np.zeros(x_graph.shape)
+    plt.tight_layout()
+    for j in range(no_of_tests):
+        metric = j
+        if j == 0:
+            metric = -math.inf
+        elif j == no_of_tests:
+            metric = math.inf
+        for k in range(0, k_max):
+            test_pred = knn_naive(train_images, train_labels, test_images, k=k, metric=metric)
+            x_graph[j, k] = k
+            F1scores[j, k] = metrics.f1_score(test_labels, test_pred)
+            ACCscores[j, k] = metrics.accuracy_score(test_labels, test_pred)
+            AUCscores[j, k] = metrics.roc_auc_score(test_labels, test_pred)
+    for j in range(no_of_tests):
+        metric = j
+        if j == 0:
+            metric = -math.inf
+        elif j == no_of_tests:
+            metric = math.inf
+        plotter(x_graph[j], AUCscores[j], ACCscores[j], F1scores[j], str(metric) + " norm", "K value")
+        plt.subplot(2, 2, j + 1)
+    plt.suptitle("KNN for binary classification with different metrics")
+    plt.figlegend(['AUC', 'ACC', 'F1'])
 
-        ACCscores[k] = EVALUATOR.getACC(test_labels, Y_test, 'binary-class')
-        F1scores[k] = f1_score(test_labels, y_pred)
-    plotter(x_graph, AUCscores, ACCscores, np.zeros(x_graph.size), 'K-means binary classification', 'K')
+    plt.show()
 
 
 def regressionstuff(train_images, train_labels, test_images, test_labels, km):
@@ -116,11 +136,11 @@ def main(inputpath):
     train_images, val_images, test_images, train_labels, val_labels, test_labels = load_input(inputpath)
 
     # now we train the data using different methods
-    # k_means_evaluator(train_images, test_images, train_labels,test_labels,kmax=50)
+    k_means_evaluator(train_images, test_images, train_labels,test_labels,kmax=50)
     regressionstuff(np.vstack((train_images, val_images)), np.vstack((train_labels, val_labels)), test_images,
                     test_labels, 100)
 
 
 if __name__ == '__main__':
     warnings.filterwarnings("ignore")
-    main("breastmnist.npz")
+    main("PRNN_final\\breastmnist.npz")
