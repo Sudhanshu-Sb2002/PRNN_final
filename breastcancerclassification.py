@@ -118,8 +118,8 @@ def regressionstuff(train_images, train_labels, test_images, test_labels, km):
     AUCscores = numpy.zeros(x_graph.size)
     ACCscores = numpy.zeros(x_graph.size)
     F1scores = numpy.zeros(x_graph.size)
-    for k in range(km):
-        y_pred = regression_classifier(train_images, train_labels, test_images, lambda_hyper=math.exp(-k / 10))
+    for k in range(1):
+        y_pred = regression_classifier(train_images, train_labels, test_images, lambda_hyper=0)
         for i in range(len(y_pred)):
             if y_pred[i][0] < 0.5:
                 y_pred[i][0] = 0
@@ -136,9 +136,9 @@ def main(inputpath):
     train_images, val_images, test_images, train_labels, val_labels, test_labels = load_input(inputpath)
 
     # now we train the data using different methods
-    k_means_evaluator(train_images, test_images, train_labels,test_labels,kmax=50)
+    #k_means_evaluator(train_images, test_images, train_labels,test_labels,kmax=50)
     regressionstuff(np.vstack((train_images, val_images)), np.vstack((train_labels, val_labels)), test_images,
-                    test_labels, 100)
+                    test_labels, 1)
 
 
 if __name__ == '__main__':
