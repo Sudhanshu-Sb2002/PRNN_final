@@ -9,6 +9,7 @@ import sklearn.metrics as metrics
 
 from PRNN_final.LinearRegression import regression_classifier
 from PRNN_final.knn import knn_naive
+from logistic_regression import logisticregression
 
 
 # includes getAUC(y_true, y_score, task),getACC(y_true, y_score, task, threshold=0.5)
@@ -137,8 +138,17 @@ def main(inputpath):
 
     # now we train the data using different methods
     #k_means_evaluator(train_images, test_images, train_labels,test_labels,kmax=50)
-    regressionstuff(np.vstack((train_images, val_images)), np.vstack((train_labels, val_labels)), test_images,
-                    test_labels, 1)
+    #regressionstuff(np.vstack((train_images, val_images)), np.vstack((train_labels, val_labels)), test_images,test_labels, 1)
+    test_pred=logisticregression(train_images,train_labels,test_images)
+    for i in test_pred:
+        if i[0]<0.5:
+            i[0]=0
+        else:
+            i[0]=1
+    from sklearn.metrics import accuracy_score
+
+
+    print(accuracy_score(test_labels,test_pred))
 
 
 if __name__ == '__main__':
